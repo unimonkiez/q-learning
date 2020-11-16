@@ -520,6 +520,10 @@ def readCommand( argv ):
                       help='Turns on exception handling and timeouts during games', default=False)
     parser.add_option('--timeout', dest='timeout', type='int',
                       help=default('Maximum length of time an agent can spend computing in a single game'), default=30)
+    parser.add_option('-p', '--numToPlot', dest='numToPlot', type='int',
+                      help=default('How many episodes are to plot to file'), default=0)
+    parser.add_option('--numToAverageInPlot', dest='numToAverageInPlot', type='int',
+                      help=default('How many episodes are to plot to file'), default=1)
 
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
@@ -567,6 +571,8 @@ def readCommand( argv ):
     args['record'] = options.record
     args['catchExceptions'] = options.catchExceptions
     args['timeout'] = options.timeout
+    args['numToPlot'] = options.numToPlot
+    args['numToAverageInPlot'] = options.numToAverageInPlot
 
     # Special case: recorded games don't use the runGames method or args structure
     if options.gameToReplay != None:
@@ -622,12 +628,13 @@ def replayGame( layout, actions, display ):
 
     display.finish()
 
-def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30 ):
+def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, numToPlot=0, numToAverageInPlot=1, catchExceptions=False, timeout=30 ):
     #import __main__
     #__main__.__dict__['_display'] = display
 
     rules = ClassicGameRules(timeout)
     games = []
+    plot = []
 
     for i in range( numGames ):
         beQuiet = i < numTraining
@@ -642,6 +649,8 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
         game = rules.newGame( layout, pacman, ghosts, gameDisplay, beQuiet, catchExceptions)
         game.run()
         if not beQuiet: games.append(game)
+        if i < numToPlot:
+            plot.append(game.state.getScore())
 
         if record:
             import time, cPickle
@@ -658,6 +667,14 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
         print('Scores:       ', ', '.join([str(score) for score in scores]))
         print('Win Rate:      %d/%d (%.2f)' % (wins.count(True), len(wins), winRate))
         print('Record:       ', ', '.join([ ['Loss', 'Win'][int(w)] for w in wins]))
+    
+    if len(plot) > 0:
+        import matplotlib.pyplot as plt
+        average_plot_values = [sum(plot[i:i+numToAverageInPlot]) / len(plot[i:i+numToAverageInPlot])//numToAverageInPlot for i in range(0,len(plot),numToAverageInPlot)]
+        plt.plot(range(1, len(average_plot_values) + 1), average_plot_values)
+        plt.xlabel('Batch index')
+        plt.ylabel('Rewards')
+        plt.show()
 
     return games
 

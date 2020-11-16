@@ -9,7 +9,8 @@
             "type": "python",
             "request": "launch",
             "program": "pacman.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": ["-x", "30", "-n", "32", "-l", "smallGrid", "-p", "20", "--numToAverageInPlot", "5"]
         }
     ]
 }
