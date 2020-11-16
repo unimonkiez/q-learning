@@ -521,9 +521,11 @@ def readCommand( argv ):
     parser.add_option('--timeout', dest='timeout', type='int',
                       help=default('Maximum length of time an agent can spend computing in a single game'), default=30)
     parser.add_option('-p', '--numToPlot', dest='numToPlot', type='int',
-                      help=default('How many episodes are to plot to file'), default=0)
+                      help=default('How many episodes are to plot'), default=0)
     parser.add_option('--numToAverageInPlot', dest='numToAverageInPlot', type='int',
-                      help=default('How many episodes are to plot to file'), default=1)
+                      help=default('How many episodes to group together in the plot from "numToPlot"'), default=1)
+    parser.add_option('-b', '--plotBucketEveryState', action='store_true', dest='plotBucketEveryState',
+                      help='Plot to histogram the number of times each state visited', default=False)
 
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
@@ -573,6 +575,7 @@ def readCommand( argv ):
     args['timeout'] = options.timeout
     args['numToPlot'] = options.numToPlot
     args['numToAverageInPlot'] = options.numToAverageInPlot
+    args['plotBucketEveryState'] = options.plotBucketEveryState
 
     # Special case: recorded games don't use the runGames method or args structure
     if options.gameToReplay != None:
@@ -628,13 +631,14 @@ def replayGame( layout, actions, display ):
 
     display.finish()
 
-def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, numToPlot=0, numToAverageInPlot=1, catchExceptions=False, timeout=30 ):
+def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, numToPlot=0, numToAverageInPlot=1, plotBucketEveryState=False, catchExceptions=False, timeout=30 ):
     #import __main__
     #__main__.__dict__['_display'] = display
 
     rules = ClassicGameRules(timeout)
     games = []
     plot = []
+    stateVisited = []
 
     for i in range( numGames ):
         beQuiet = i < numTraining
@@ -674,6 +678,24 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
         plt.plot(range(1, len(average_plot_values) + 1), average_plot_values)
         plt.xlabel('Batch index')
         plt.ylabel('Rewards')
+        plt.show()
+
+    if plotBucketEveryState:
+        data = pacman.numberOfVisitsPerState.values()
+
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        plt.hist(
+            data,
+            weights=np.ones(len(data)) / len(data),
+            bins=[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 100000]
+        )
+        plt.xlabel('State occurrences')
+        plt.ylabel('Probability')
+        plt.title('Histogram of State probabbility')
+        plt.axis([0, 6, 0, 0.9])
+        plt.grid(True)
         plt.show()
 
     return games

@@ -43,6 +43,7 @@ class QLearningAgent(ReinforcementAgent):
     def __init__(self, **args):
         "You can initialize Q-values here..."
         ReinforcementAgent.__init__(self, **args)
+        self.numberOfVisitsPerState = defaultdict(int)
         self.Q = defaultdict(float)
         self.epsilon = float(args['epsilon'])
         self.alpha = float(args['alpha'])
@@ -58,7 +59,11 @@ class QLearningAgent(ReinforcementAgent):
     
     def setQValue(self, state, action, value):
         self.Q[(state, action)] = value
-
+    
+    def updateNumberOfVisits(self, state):
+        numberOfVisits = self.numberOfVisitsPerState[state]
+        numberOfVisits += 1
+        self.numberOfVisitsPerState[state] = numberOfVisits
 
     def computeValueFromQValues(self, state):
         """
@@ -123,7 +128,8 @@ class QLearningAgent(ReinforcementAgent):
         
         new_value = (1 - self.alpha) * q_value + self.alpha * (reward + self.discount * next_value)
         
-        self.setQValue(state, action, new_value) 
+        self.setQValue(state, action, new_value)
+        self.updateNumberOfVisits(nextState)
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)

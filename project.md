@@ -133,3 +133,7 @@ pts)
     Rerun the previous agent and answer what percentage of states was visited once?  
     less then 5 time? Does this explain the results on this MDP?  
     How would you change the agent to handle this MDP? (25 pts)
+
+    **Now I added to the agent a dict keeping track of how many states were visited (on `update` method).
+    I also added another CLI parameter to plot that histogram to answer and requested questions.
+    Here is the graph**
