@@ -674,11 +674,11 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
     
     if len(plot) > 0:
         import matplotlib.pyplot as plt
-        average_plot_values = [sum(plot[i:i+numToAverageInPlot]) / len(plot[i:i+numToAverageInPlot])//numToAverageInPlot for i in range(0,len(plot),numToAverageInPlot)]
+        average_plot_values = [(sum(plot[i:i+numToAverageInPlot]))//numToAverageInPlot for i in range(0,len(plot),numToAverageInPlot)]
         plt.plot(range(1, len(average_plot_values) + 1), average_plot_values)
         plt.xlabel('Batch index')
         plt.ylabel('Rewards')
-        plt.show()
+        plt.savefig('average.png')
 
     if plotBucketEveryState:
         data = pacman.numberOfVisitsPerState.values()
@@ -694,9 +694,9 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
         plt.xlabel('State occurrences')
         plt.ylabel('Probability')
         plt.title('Histogram of State probabbility')
-        plt.axis([0, 6, 0, 0.9])
+        plt.axis([0, 6, 0, 1])
         plt.grid(True)
-        plt.show()
+        plt.savefig('prob.png')
 
     return games
 
