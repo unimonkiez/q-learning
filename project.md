@@ -82,24 +82,24 @@ pts)
     ```bash
     python pacman.py -x 3000 -n 3010 -l smallGrid -p 3000 --numToAverageInPlot 50
     ```
-    ![](2020-11-16-16-21-03.png)
+    ![](images/2020-11-16-16-21-03.png)
     **Now simply ran that for different epsilons as requested**
         * `epsilon=0`  
             ```bash
             python pacman.py -x 3000 -n 3050 -l smallGrid -q -a epsilon=0,alpha=0.2,gamma=0.8 -p 3050 --numToAverageInPlot 50
             ```
-            ![](2020-11-16-18-15-23.png)
+            ![](images/2020-11-16-18-15-23.png)
         * `epsilon=0.1`
             ```bash
             python pacman.py -x 3000 -n 3050 -l smallGrid -q -a epsilon=0.1,alpha=0.2,gamma=0.8 -p 3050 --numToAverageInPlot 50
             ```
-            ![](2020-11-16-18-17-22.png)
+            ![](images/2020-11-16-18-17-22.png)
             **The spike for the last batch is because eplison is zeroed for those runs.**
         * `epsilon=1`
             ```bash
             python pacman.py -x 3000 -n 3050 -l smallGrid -q -a epsilon=1,alpha=0.2,gamma=0.8 -p 3050 --numToAverageInPlot 50
             ```
-            ![](2020-11-16-18-18-10.png)
+            ![](images/2020-11-16-18-18-10.png)
     * Keep epsilon and gamma fixed and run with these alphas 0.1,0.2,0.3 .  
     Show average test results over 50 runs and the training plots
 
@@ -108,17 +108,17 @@ pts)
             ```bash
             python pacman.py -x 3000 -n 3050 -l smallGrid -q -a epsilon=0.05,alpha=0.1,gamma=0.8 -p 3050 --numToAverageInPlot 50
             ```
-            ![](2020-11-16-18-23-50.png)
+            ![](images/2020-11-16-18-23-50.png)
         * `alpha=0.2`
             ```bash
             python pacman.py -x 3000 -n 3050 -l smallGrid -q -a epsilon=0.05,alpha=0.2,gamma=0.8 -p 3050 --numToAverageInPlot 50
             ```
-            ![](2020-11-16-18-17-22.png)
+            ![](images/2020-11-16-18-17-22.png)
         * `alpha=0.3`
             ```bash
             python pacman.py -x 3000 -n 3050 -l smallGrid -q -a epsilon=0.05,alpha=0.3,gamma=0.8 -p 3050 --numToAverageInPlot 50
             ```
-            ![](2020-11-16-18-24-59.png)
+            ![](images/2020-11-16-18-24-59.png)
 5. The agent with no exploration (epsilon=0) works well, why is that?  
     (hint: think of the values of the rewards in the initial epochs) (15 pts)
 
@@ -128,6 +128,8 @@ pts)
 6. We will run on medium size pacman for 20000 epochs, run `python pacman.py -x 20000 -n 20050`. How are the results?
 
     **I ran the code with plot parameters, so more data will be available to show**
+    ![](images/2020-11-17-18-38-21.png)
+    **It seems to pacman does learn and get better over time, but not enough to win.**
 
 7. Modify the agent to keep a count of how many times he visited every state.  
     Rerun the previous agent and answer what percentage of states was visited once?  
@@ -137,3 +139,7 @@ pts)
     **Now I added to the agent a dict keeping track of how many states were visited (on `update` method).
     I also added another CLI parameter to plot that histogram to answer and requested questions.
     Here is the graph**
+    ![](images/2020-11-17-18-50-36.png)
+    **Seems like most of the states were only visited once, and that's likely when playing on such a huge map with some many outcomes.
+    It does make sense as the policy is static.
+    To improve this MDP, I would change the agent to have self improving policy.**
